@@ -22,6 +22,7 @@ use color_eyre::{eyre::eyre, Help, Result};
 use colored::Colorize;
 use libp2p_identity::PeerId;
 use semver::Version;
+use sn_evm::EvmNetwork;
 use sn_logging::LogFormat;
 use sn_peers_acquisition::PeersArgs;
 use sn_releases::{ReleaseType, SafeReleaseRepoActions};
@@ -42,6 +43,7 @@ pub async fn add(
     data_dir_path: Option<PathBuf>,
     enable_metrics_server: bool,
     env_variables: Option<Vec<(String, String)>>,
+    evm_network: Option<EvmNetwork>,
     home_network: bool,
     local: bool,
     log_dir_path: Option<PathBuf>,
@@ -140,6 +142,7 @@ pub async fn add(
         count,
         delete_safenode_src: src_path.is_none(),
         enable_metrics_server,
+        evm_network: evm_network.unwrap_or_else(|| EvmNetwork::ArbitrumOne),
         env_variables,
         genesis: is_first,
         home_network,
@@ -702,6 +705,7 @@ pub async fn maintain_n_running_nodes(
                         data_dir_path.clone(),
                         enable_metrics_server,
                         env_variables.clone(),
+                        None,
                         home_network,
                         local,
                         log_dir_path.clone(),

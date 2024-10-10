@@ -13,6 +13,7 @@ pub use evmlib::common::Address as RewardsAddress;
 pub use evmlib::common::{QuoteHash, TxHash};
 pub use evmlib::utils;
 pub use evmlib::wallet::Wallet as EvmWallet;
+pub use evmlib::CustomNetwork;
 pub use evmlib::Network as EvmNetwork;
 
 mod amount;

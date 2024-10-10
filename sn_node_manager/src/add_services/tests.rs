@@ -23,7 +23,7 @@ use libp2p::Multiaddr;
 use mockall::{mock, predicate::*, Sequence};
 use predicates::prelude::*;
 use service_manager::ServiceInstallCtx;
-use sn_evm::AttoTokens;
+use sn_evm::{AttoTokens, CustomNetwork, EvmNetwork, RewardsAddress};
 use sn_service_management::{auditor::AuditorServiceData, control::ServiceControl};
 use sn_service_management::{error::Result as ServiceControlResult, NatDetectionStatus};
 use sn_service_management::{
@@ -115,6 +115,15 @@ async fn add_genesis_node_should_use_latest_version_and_add_one_service() -> Res
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: true,
         home_network: false,
         local: true,
@@ -168,6 +177,15 @@ async fn add_genesis_node_should_use_latest_version_and_add_one_service() -> Res
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -199,6 +217,18 @@ async fn add_genesis_node_should_use_latest_version_and_add_one_service() -> Res
         node_data_dir.to_path_buf().join("safenode1")
     );
     assert_matches!(node_registry.nodes[0].status, ServiceStatus::Added);
+    assert_eq!(
+        node_registry.nodes[0].evm_network,
+        EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC"
+            )?,
+        })
+    );
 
     Ok(())
 }
@@ -221,6 +251,15 @@ async fn add_genesis_node_should_return_an_error_if_there_is_already_a_genesis_n
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: true,
             home_network: false,
             listen_addr: None,
@@ -286,6 +325,15 @@ async fn add_genesis_node_should_return_an_error_if_there_is_already_a_genesis_n
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -355,6 +403,15 @@ async fn add_genesis_node_should_return_an_error_if_count_is_greater_than_1() ->
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -411,6 +468,15 @@ async fn add_node_should_use_latest_version_and_add_three_services() -> Result<(
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -449,6 +515,15 @@ async fn add_node_should_use_latest_version_and_add_three_services() -> Result<(
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode2"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -487,6 +562,15 @@ async fn add_node_should_use_latest_version_and_add_three_services() -> Result<(
         data_dir_path: node_data_dir.to_path_buf().join("safenode3"),
         bootstrap_peers: vec![],
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -541,6 +625,15 @@ async fn add_node_should_use_latest_version_and_add_three_services() -> Result<(
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -646,6 +739,15 @@ async fn add_node_should_update_the_bootstrap_peers_inside_node_registry() -> Re
         bootstrap_peers: new_peers.clone(),
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -665,6 +767,7 @@ async fn add_node_should_update_the_bootstrap_peers_inside_node_registry() -> Re
         upnp: false,
     }
     .build()?;
+
     mock_service_control
         .expect_install()
         .times(1)
@@ -691,14 +794,23 @@ async fn add_node_should_update_the_bootstrap_peers_inside_node_registry() -> Re
             node_port: None,
             rpc_address: None,
             rpc_port: None,
-            safenode_dir_path: temp_dir.to_path_buf(),
             safenode_src_path: safenode_download_path.to_path_buf(),
+            safenode_dir_path: temp_dir.to_path_buf(),
             service_data_dir_path: node_data_dir.to_path_buf(),
             service_log_dir_path: node_logs_dir.to_path_buf(),
             upnp: false,
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -778,6 +890,15 @@ async fn add_node_should_update_the_environment_variables_inside_node_registry()
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: env_variables.clone(),
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -831,6 +952,15 @@ async fn add_node_should_update_the_environment_variables_inside_node_registry()
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -883,6 +1013,15 @@ async fn add_new_node_should_add_another_service() -> Result<()> {
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: true,
             home_network: false,
             listen_addr: None,
@@ -929,6 +1068,15 @@ async fn add_new_node_should_add_another_service() -> Result<()> {
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode2"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -983,6 +1131,15 @@ async fn add_new_node_should_add_another_service() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -1075,6 +1232,13 @@ async fn add_node_should_use_custom_ip() -> Result<()> {
                     ),
                     OsString::from("--ip"),
                     OsString::from(custom_ip.to_string()),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -1119,6 +1283,15 @@ async fn add_node_should_use_custom_ip() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -1176,6 +1349,15 @@ async fn add_node_should_use_custom_ports_for_one_service() -> Result<()> {
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -1230,6 +1412,15 @@ async fn add_node_should_use_custom_ports_for_one_service() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -1307,6 +1498,13 @@ async fn add_node_should_use_a_custom_port_range() -> Result<()> {
                     ),
                     OsString::from("--port"),
                     OsString::from("12000"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -1356,6 +1554,13 @@ async fn add_node_should_use_a_custom_port_range() -> Result<()> {
                     ),
                     OsString::from("--port"),
                     OsString::from("12001"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -1405,6 +1610,13 @@ async fn add_node_should_use_a_custom_port_range() -> Result<()> {
                     ),
                     OsString::from("--port"),
                     OsString::from("12002"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -1449,6 +1661,15 @@ async fn add_node_should_use_a_custom_port_range() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -1481,6 +1702,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_port_is_used() -> R
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -1544,6 +1774,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_port_is_used() -> R
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -1574,6 +1813,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_port_in_range_is_us
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -1637,6 +1885,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_port_in_range_is_us
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -1696,14 +1953,23 @@ async fn add_node_should_return_an_error_if_port_and_node_count_do_not_match() -
             node_port: Some(PortRange::Range(12000, 12002)),
             rpc_address: None,
             rpc_port: None,
-            safenode_dir_path: temp_dir.to_path_buf(),
             safenode_src_path: safenode_download_path.to_path_buf(),
+            safenode_dir_path: temp_dir.to_path_buf(),
             service_data_dir_path: node_data_dir.to_path_buf(),
             service_log_dir_path: node_logs_dir.to_path_buf(),
             upnp: false,
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -1776,6 +2042,15 @@ async fn add_node_should_return_an_error_if_multiple_services_are_specified_with
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -1857,6 +2132,13 @@ async fn add_node_should_set_random_ports_if_enable_metrics_server_is_true() -> 
                     ),
                     OsString::from("--metrics-server-port"),
                     OsString::from("15001"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -1901,6 +2183,15 @@ async fn add_node_should_set_random_ports_if_enable_metrics_server_is_true() -> 
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -1972,6 +2263,13 @@ async fn add_node_should_use_a_custom_port_range_for_metrics_server() -> Result<
                     ),
                     OsString::from("--metrics-server-port"),
                     OsString::from("12000"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2021,6 +2319,13 @@ async fn add_node_should_use_a_custom_port_range_for_metrics_server() -> Result<
                     ),
                     OsString::from("--metrics-server-port"),
                     OsString::from("12001"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2070,6 +2375,13 @@ async fn add_node_should_use_a_custom_port_range_for_metrics_server() -> Result<
                     ),
                     OsString::from("--metrics-server-port"),
                     OsString::from("12002"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2114,6 +2426,15 @@ async fn add_node_should_use_a_custom_port_range_for_metrics_server() -> Result<
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -2143,6 +2464,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_metrics_port_is_use
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -2206,6 +2536,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_metrics_port_is_use
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -2237,6 +2576,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_metrics_port_in_ran
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -2300,6 +2648,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_metrics_port_in_ran
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -2369,6 +2726,13 @@ async fn add_node_should_use_a_custom_port_range_for_the_rpc_server() -> Result<
                             .to_string_lossy()
                             .to_string(),
                     ),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2411,6 +2775,13 @@ async fn add_node_should_use_a_custom_port_range_for_the_rpc_server() -> Result<
                             .to_string_lossy()
                             .to_string(),
                     ),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2453,6 +2824,13 @@ async fn add_node_should_use_a_custom_port_range_for_the_rpc_server() -> Result<
                             .to_string_lossy()
                             .to_string(),
                     ),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -2497,6 +2875,15 @@ async fn add_node_should_use_a_custom_port_range_for_the_rpc_server() -> Result<
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -2537,6 +2924,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_rpc_port_is_used() 
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -2600,6 +2996,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_rpc_port_is_used() 
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -2631,6 +3036,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_rpc_port_in_range_i
             auto_restart: false,
             connected_peers: None,
             data_dir_path: PathBuf::from("/var/safenode-manager/services/safenode1"),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
             genesis: false,
             home_network: false,
             listen_addr: None,
@@ -2694,6 +3108,15 @@ async fn add_node_should_return_an_error_if_duplicate_custom_rpc_port_in_range_i
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &MockServiceControl::new(),
@@ -2749,6 +3172,15 @@ async fn add_node_should_disable_upnp_and_home_network_if_nat_status_is_public()
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -2802,6 +3234,15 @@ async fn add_node_should_disable_upnp_and_home_network_if_nat_status_is_public()
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -2854,6 +3295,15 @@ async fn add_node_should_enable_upnp_if_nat_status_is_upnp() -> Result<()> {
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -2907,6 +3357,15 @@ async fn add_node_should_enable_upnp_if_nat_status_is_upnp() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -2959,6 +3418,15 @@ async fn add_node_should_enable_home_network_if_nat_status_is_private() -> Resul
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: true,
         local: false,
@@ -3012,6 +3480,15 @@ async fn add_node_should_enable_home_network_if_nat_status_is_private() -> Resul
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -3087,6 +3564,15 @@ async fn add_node_should_return_an_error_if_nat_status_is_none_but_auto_set_nat_
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -3680,6 +4166,15 @@ async fn add_node_should_not_delete_the_source_binary_if_path_arg_is_used() -> R
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: false,
         local: false,
@@ -3734,6 +4229,15 @@ async fn add_node_should_not_delete_the_source_binary_if_path_arg_is_used() -> R
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -3790,6 +4294,15 @@ async fn add_node_should_apply_the_home_network_flag_if_it_is_used() -> Result<(
         genesis: false,
         home_network: true,
         local: false,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         log_dir_path: node_logs_dir.to_path_buf().join("safenode1"),
         log_format: None,
         metrics_port: None,
@@ -3841,6 +4354,15 @@ async fn add_node_should_apply_the_home_network_flag_if_it_is_used() -> Result<(
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -3894,6 +4416,15 @@ async fn add_node_should_add_the_node_in_user_mode() -> Result<()> {
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: true,
         local: false,
@@ -3948,6 +4479,15 @@ async fn add_node_should_add_the_node_in_user_mode() -> Result<()> {
             user: Some(get_username()),
             user_mode: true,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -3998,6 +4538,15 @@ async fn add_node_should_add_the_node_with_upnp_enabled() -> Result<()> {
         bootstrap_peers: vec![],
         data_dir_path: node_data_dir.to_path_buf().join("safenode1"),
         env_variables: None,
+        evm_network: EvmNetwork::Custom(CustomNetwork {
+            rpc_url_http: "http://localhost:8545".parse()?,
+            payment_token_address: RewardsAddress::from_str(
+                "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+            )?,
+            data_payments_address: RewardsAddress::from_str(
+                "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+            )?,
+        }),
         genesis: false,
         home_network: true,
         local: false,
@@ -4052,6 +4601,15 @@ async fn add_node_should_add_the_node_with_upnp_enabled() -> Result<()> {
             user: Some(get_username()),
             user_mode: true,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -4123,6 +4681,13 @@ async fn add_node_should_assign_an_owner() -> Result<()> {
                     ),
                     OsString::from("--owner"),
                     OsString::from("discord_username"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: false,
                 contents: None,
@@ -4168,6 +4733,15 @@ async fn add_node_should_assign_an_owner() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,
@@ -4241,6 +4815,13 @@ async fn add_node_should_auto_restart() -> Result<()> {
                     ),
                     OsString::from("--owner"),
                     OsString::from("discord_username"),
+                    OsString::from("evm-custom"),
+                    OsString::from("--rpc-url"),
+                    OsString::from("http://localhost:8545/"),
+                    OsString::from("--payment-token-address"),
+                    OsString::from("0x5FbDB2315678afecb367f032d93F642f64180aa3"),
+                    OsString::from("--data-payments-address"),
+                    OsString::from("0x8464135c8F25Da09e49BC8782676a84730C318bC"),
                 ],
                 autostart: true,
                 contents: None,
@@ -4286,6 +4867,15 @@ async fn add_node_should_auto_restart() -> Result<()> {
             user: Some(get_username()),
             user_mode: false,
             version: latest_version.to_string(),
+            evm_network: EvmNetwork::Custom(CustomNetwork {
+                rpc_url_http: "http://localhost:8545".parse()?,
+                payment_token_address: RewardsAddress::from_str(
+                    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                )?,
+                data_payments_address: RewardsAddress::from_str(
+                    "0x8464135c8F25Da09e49BC8782676a84730C318bC",
+                )?,
+            }),
         },
         &mut node_registry,
         &mock_service_control,

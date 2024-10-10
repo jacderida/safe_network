@@ -123,6 +123,9 @@ pub enum SubCmd {
         /// Example: --env SN_LOG=all,RUST_LOG=libp2p=debug
         #[clap(name = "env", long, use_value_delimiter = true, value_parser = parse_environment_variables)]
         env_variables: Option<Vec<(String, String)>>,
+        /// Specify what EVM network to use for payments.
+        #[command(subcommand)]
+        evm_network: EvmNetworkCommand,
         /// Set this flag to use the safenode '--home-network' feature.
         ///
         /// This enables the use of safenode services from a home network with a router.
@@ -1071,6 +1074,7 @@ async fn main() -> Result<()> {
             data_dir_path,
             enable_metrics_server,
             env_variables,
+            evm_network,
             home_network,
             local,
             log_dir_path,
@@ -1088,13 +1092,14 @@ async fn main() -> Result<()> {
             user,
             version,
         }) => {
-            let _ = cmd::node::add(
+            cmd::node::add(
                 auto_restart,
                 auto_set_nat_flags,
                 count,
                 data_dir_path,
                 enable_metrics_server,
                 env_variables,
+                Some(evm_network.try_into()?),
                 home_network,
                 local,
                 log_dir_path,
